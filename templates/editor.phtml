@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Edit Columns</title>
+	<script type="text/javascript" src="/vendor/components/jquery/jquery.min.js"></script>
+</head>
+<body>
+
+<form action="/editor" method="post">
+	<table>
+		<tr>
+			<td>ID</td>
+			<td id="td-last-id"></td>
+			<td><button id="button-add-column" type="button"> [ + ] </button></td>
+		</tr>
+		<tr>
+			<td>Label</td>
+			<td id="td-last-label"></td>
+		</tr>
+	</table>
+	<button id="button-submit" type="submit">Save</button>
+</form>
+
+<script type="text/javascript">
+	function createColumn(valueId, valueLabel) {
+		var $lastId = $('#td-last-id');
+		var $lastLabel = $('#td-last-label');
+
+		$('<td><input name="column_id[]" value="'+valueId+'"/></td>').insertBefore($lastId);
+		$('<td><input name="column_label[]" value="'+valueLabel+'"/></td>').insertBefore($lastLabel);
+	}
+
+	$('#button-add-column').click(function (event) {
+		createColumn('', '');
+	});
+
+	<?php foreach ($columns as $column) : ?>
+		createColumn(<?=json_encode($column['id'])?>, <?=json_encode($column['label'])?>);
+	<?php endforeach; ?>
+</script>
+<pre>
+
+</pre>
+</body>
+</html>

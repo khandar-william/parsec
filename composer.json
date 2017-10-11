@@ -3,6 +3,7 @@
         "denissimon/formula-parser": "^2.5",
         "slim/slim": "^3.0",
         "catfan/Medoo": "^1.4",
-        "slim/php-view": "^2.2"
+        "slim/php-view": "^2.2",
+        "components/jquery": "^3.2"
     }
 }
