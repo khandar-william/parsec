@@ -5,8 +5,6 @@ require 'vendor/autoload.php';
 use FormulaParser\FormulaParser;
 use Medoo\Medoo;
 
-
-
 $app = new Slim\App();
 
 $container = $app->getContainer();
@@ -71,8 +69,20 @@ $app->post('/editor', function ($request, $response, $args) {
 	return $response->withRedirect('/editor');
 });
 
-$app->get('/hello', function ($request, $response, $args) {
-	return $this->view->render($response, 'hello.php');
+$app->get('/formula', function ($request, $response, $args) {
+	$columns = $this->database->select('columns', '*', [
+		'ORDER' => ['position' => 'ASC'],
+	]);
+	$formulas = $this->database->select('formulas', '*');
+	$merchantIds = [10, 20, 30];
+	$paymentMethods = ['klikbca', 'creditcard', 'sakuku'];
+
+	return $this->view->render($response, 'formula.phtml', [
+		'columns' => $columns,
+		'formulas' => $formulas,
+		'merchantIds' => $merchantIds,
+		'paymentMethods' => $paymentMethods,
+	]);
 });
 
 $app->run();
