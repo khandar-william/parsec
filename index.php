@@ -3,6 +3,25 @@
 require 'vendor/autoload.php';
 
 use FormulaParser\FormulaParser;
+use Medoo\Medoo;
+
+$database = new Medoo([
+	'database_type' => 'sqlite',
+	'database_file' => 'awkward.sqlite'
+]);
+
+$database->query("CREATE TABLE IF NOT EXISTS columns (
+	id TEXT,
+	label TEXT,
+	position INT
+);");
+
+$database->query("CREATE TABLE IF NOT EXISTS formulas (
+	merchant_id TEXT,
+	payment_method TEXT,
+	column_id TEXT,
+	formula TEXT
+);");
 
 $app = new Slim\App();
 
@@ -14,6 +33,11 @@ $app->get('/situ', function ($request, $response, $args) {
     $result = $parser->getResult(); // [0 => 'done', 1 => 16.38]
 
     return $response->write("Reult  " . json_encode($result));
+});
+
+$app->get('/asdf', function ($request, $response, $args) use ($database) {
+	$columns = $database->select('columns', '*');
+	return $response->write(print_r($columns, true));
 });
 
 $app->run();
