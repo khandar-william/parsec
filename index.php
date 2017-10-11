@@ -25,6 +25,15 @@ $database->query("CREATE TABLE IF NOT EXISTS formulas (
 
 $app = new Slim\App();
 
+$container = $app->getContainer();
+
+$container['database'] = function ($container) use ($database) {
+	return $database;
+};
+$container['view'] = function ($container) {
+    return new \Slim\Views\PhpRenderer('templates/');
+};
+
 $app->get('/situ', function ($request, $response, $args) {
 	$formula = '3*x^2 - 4*y + 3/y';
 	$precision = 2; // Number of digits after the decimal point
@@ -35,9 +44,13 @@ $app->get('/situ', function ($request, $response, $args) {
     return $response->write("Reult  " . json_encode($result));
 });
 
-$app->get('/asdf', function ($request, $response, $args) use ($database) {
-	$columns = $database->select('columns', '*');
+$app->get('/asdf', function ($request, $response, $args) {
+	$columns = $this->database->select('columns', '*');
 	return $response->write(print_r($columns, true));
+});
+
+$app->get('/hello', function ($request, $response, $args) {
+	return $this->view->render($response, 'hello.php');
 });
 
 $app->run();
