@@ -35,13 +35,14 @@ $container['view'] = function ($container) {
 };
 
 $app->get('/situ', function ($request, $response, $args) {
-	$formula = '3*x^2 - 4*y + 3/y';
+	$formula = '3*K';
 	$precision = 2; // Number of digits after the decimal point
 	$parser = new FormulaParser($formula, $precision);
-    $parser->setVariables(['x' => -4, 'y' => 8]);
+	$parser->setValidVariables(['K']);
+    $parser->setVariables(['K' => 8]);
     $result = $parser->getResult(); // [0 => 'done', 1 => 16.38]
 
-    return $response->write("Reult  " . json_encode($result));
+    return $response->write("Result $formula = " . json_encode($result));
 });
 
 $app->get('/editor', function ($request, $response, $args) {
@@ -127,6 +128,7 @@ $app->post('/simulate-result', function ($request, $response, $args) {
 	// Calculate
 	foreach ($formulaUsed as $columnId => $formulaText) {
 	    $parser = new FormulaParser($formulaText);
+	    $parser->setValidVariables(array_keys($variables));
 	    $parser->setVariables($variables);
 	    $result = $parser->getResult();
 	    $resultValue = $result[1];
