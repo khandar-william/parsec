@@ -45,9 +45,8 @@ $app->get('/situ', function ($request, $response, $args) {
 });
 
 $app->get('/editor', function ($request, $response, $args) {
-	$columns = $this->database->select('columns', '*', [
-		'ORDER' => ['position' => 'ASC'],
-	]);
+	$columns = Helper::getColumnsSorted($this);
+
 	return $this->view->render($response, 'editor.phtml', [
 		'columns' => $columns,
 	]);
@@ -70,18 +69,61 @@ $app->post('/editor', function ($request, $response, $args) {
 });
 
 $app->get('/formula', function ($request, $response, $args) {
-	$columns = $this->database->select('columns', '*', [
-		'ORDER' => ['position' => 'ASC'],
-	]);
-	$formulas = $this->database->select('formulas', '*');
+	$columns = Helper::getColumnsSorted($this);
+
 	$merchantIds = [10, 20, 30];
 	$paymentMethods = ['klikbca', 'creditcard', 'sakuku'];
+	$fields = Helper::getInitVariables();
+
+	$rearranged = Helper::getFormulasRearranged($this);
 
 	return $this->view->render($response, 'formula.phtml', [
 		'columns' => $columns,
-		'formulas' => $formulas,
+		'rearranged' => $rearranged,
 		'merchantIds' => $merchantIds,
 		'paymentMethods' => $paymentMethods,
+		'fields' => $fields,
+	]);
+});
+
+$app->post('/formula', function ($request, $response, $args) {
+	$this->database->query('DELETE FROM formulas');
+	$formulas = $request->getParsedBodyParam('formula');
+
+	foreach ($formulas as $merchantId => $pairLevel2) {
+		foreach ($pairLevel2 as $paymentMethod => $pairLevel3) {
+			foreach ($pairLevel3 as $columnId => $formulaText) {
+				$this->database->insert('formulas', [
+					'merchant_id' => $merchantId,
+					'payment_method' => $paymentMethod,
+					'column_id' => $columnId,
+					'formula' => $formulaText,
+				]);
+			}
+		}
+	}
+	return $response->withRedirect('/formula');
+});
+
+$app->get('/simulate-form', function ($request, $response, $args) {
+	$fields = Helper::getInitVariables();
+	return $this->view->render($response, 'simulate-form.phtml', [
+		'fields' => $fields,
+	]);
+});
+
+$app->post('/simulate-result', function ($request, $response, $args) {
+	$variables = [];
+	foreach (Helper::getInitVariables() as $field) {
+		$variables[$field] = $request->getParsedBodyParam($field);
+	}
+
+	$rearranged = Helper::getFormulasRearranged($this);
+
+
+	return $this->view->render($response, 'simulate-result.phtml', [
+		'variables' => $variables,
+		'rearranged' => $rearranged,
 	]);
 });
 

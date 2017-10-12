@@ -6,8 +6,37 @@
 </head>
 <body>
 
-<form action="/editor" method="post">
-	// @todo
+Available variables:
+<ul>
+	<?php foreach ($fields as $field) : ?>
+		<li><?=$field;?></li>
+	<?php endforeach; ?>
+</ul>
+
+<form action="/formula" method="post">
+	<table>
+		<tr>
+			<th>Merchant ID</th>
+			<th>Payment Method</th>
+			<?php foreach ($columns as $k => $column) : ?>
+				<th><?=$column['label']?><br/>(<?=$column['id']?>)</th>
+			<?php endforeach; ?>
+		</tr>
+		<?php foreach ($merchantIds as $merchantId): ?>
+			<?php foreach ($paymentMethods as $paymentMethod): ?>
+				<tr>
+					<td><?=$merchantId;?></td>
+					<td><?=$paymentMethod;?></td>
+					<?php foreach ($columns as $column): ?>
+						<td>
+							<textarea name="formula[<?=$merchantId;?>][<?=$paymentMethod;?>][<?=$column['id'];?>]"><?=@$rearranged[$merchantId][$paymentMethod][$column['id']]?></textarea>
+						</td>
+					<?php endforeach; ?>
+				</tr>
+			<?php endforeach; ?>
+		<?php endforeach; ?>
+	</table>
+	<button id="button-submit" type="submit">Save</button>
 </form>
 
 <script type="text/javascript">

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fill In The Blanks</title>
+</head>
+<body>
+
+<form action="/simulate-result" method="post">
+	<?php foreach ($fields as $field) : ?>
+		<label><?=$field;?></label>
+		<input type="text" name="<?=$field;?>">
+		<br>
+	<?php endforeach; ?>
+	<button id="button-submit" type="submit">Go</button>
+</form>
+
+</body>
+</html>
