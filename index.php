@@ -118,12 +118,24 @@ $app->post('/simulate-result', function ($request, $response, $args) {
 		$variables[$field] = $request->getParsedBodyParam($field);
 	}
 
-	$rearranged = Helper::getFormulasRearranged($this);
+	$merchantId = $variables['merchant_id'];
+	$paymentMethod = $variables['payment_method'];
 
+	$rearranged = Helper::getFormulasRearranged($this);
+	$formulaUsed = $rearranged[$merchantId][$paymentMethod];
+
+	// Calculate
+	foreach ($formulaUsed as $columnId => $formulaText) {
+	    $parser = new FormulaParser($formulaText);
+	    $parser->setVariables($variables);
+	    $result = $parser->getResult();
+	    $resultValue = $result[1];
+	    $variables[$columnId] = $resultValue;
+	}
 
 	return $this->view->render($response, 'simulate-result.phtml', [
 		'variables' => $variables,
-		'rearranged' => $rearranged,
+		'formulaUsed' => $formulaUsed,
 	]);
 });
 
