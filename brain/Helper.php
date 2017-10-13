@@ -23,6 +23,7 @@ class Helper {
 			'release_amount',
 			'refund_amount',
 			'charge_amount',
+			/*
 			'detail_amount_item',
 			'detail_amount_escrow_fee',
 			'detail_amount_delivery_fee',
@@ -34,6 +35,7 @@ class Helper {
 			'detail_amount_insurance_fee',
 			'detail_amount_credit_card_mdr_fee',
 			'detail_amount_transaction_fee_seller',
+			*/
 		];
 	}
 }

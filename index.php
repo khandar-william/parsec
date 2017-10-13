@@ -2,7 +2,6 @@
 
 require 'vendor/autoload.php';
 
-use FormulaParser\FormulaParser;
 use Medoo\Medoo;
 
 $app = new Slim\App();
@@ -35,12 +34,14 @@ $container['view'] = function ($container) {
 };
 
 $app->get('/situ', function ($request, $response, $args) {
-	$formula = '3*K';
-	$precision = 2; // Number of digits after the decimal point
-	$parser = new FormulaParser($formula, $precision);
-	$parser->setValidVariables(['K']);
-    $parser->setVariables(['K' => 8]);
-    $result = $parser->getResult(); // [0 => 'done', 1 => 16.38]
+	$formula = '(hundred - 3) * amount';
+
+	$compiler = new FormulaInterpreter\Compiler();
+	$executable = $compiler->compile($formula);
+	$result = $executable->run([
+		'amount' => 8,
+		'hundred' => 100,
+	]);
 
     return $response->write("Result $formula = " . json_encode($result));
 });
@@ -126,12 +127,12 @@ $app->post('/simulate-result', function ($request, $response, $args) {
 	$formulaUsed = $rearranged[$merchantId][$paymentMethod];
 
 	// Calculate
+	$compiler = new FormulaInterpreter\Compiler();
 	foreach ($formulaUsed as $columnId => $formulaText) {
-	    $parser = new FormulaParser($formulaText);
-	    $parser->setValidVariables(array_keys($variables));
-	    $parser->setVariables($variables);
-	    $result = $parser->getResult();
-	    $resultValue = $result[1];
+		// @todo catch ParserException
+		$executable = $compiler->compile($formulaText);
+		$resultValue = $executable->run($variables);
+
 	    $variables[$columnId] = $resultValue;
 	}
 

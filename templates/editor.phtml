@@ -16,6 +16,7 @@
 		<tr>
 			<td>Label</td>
 			<td id="td-last-label"></td>
+			<td><button id="button-del-column" type="button"> [ - ] </button></td>
 		</tr>
 	</table>
 	<button id="button-submit" type="submit">Save</button>
@@ -32,6 +33,14 @@
 
 	$('#button-add-column').click(function (event) {
 		createColumn('', '');
+	});
+
+	$('#button-del-column').click(function (event) {
+		var $lastId = $('#td-last-id');
+		var $lastLabel = $('#td-last-label');
+
+		$lastId.prev().remove();
+		$lastLabel.prev().remove();
 	});
 
 	<?php foreach ($columns as $column) : ?>
